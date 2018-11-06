@@ -20,8 +20,10 @@ public:
 	Manager(const std::size_t layer_num, const ofFbo::Settings& settings);
 	~Manager();
 	void update(const float& delta_time);
-	void draw();
-	void drawGui();
+	void draw() const;
+	void bang();
+
+	void drawFrameGui();
 
 	static void setupBackyard();
 	static void drawBackyardGui();

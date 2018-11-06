@@ -70,11 +70,18 @@ namespace Gen {
 
 
 
-	void Manager::draw() {
-		fbo_2d_.draw(0., 0.);
+	void Manager::draw() const {
+		result_fbo_.draw(0., 0.);
 	}
 
 
+	void Manager::bang() {
+		for (const auto& layer : this->process_map) {
+			if (layer.second->getAlpha() > 0.f) {
+				layer.second->bang();
+			}
+		}
+	}
 
 
 	void Manager::layerAdded(GenEvent& event) {
@@ -89,7 +96,7 @@ namespace Gen {
 
 
 
-	void Manager::drawGui() {
+	void Manager::drawFrameGui() {
 		auto& style = ImGui::GetStyle();
 		style.FramePadding = ImVec2(2.f, 2.f);
 

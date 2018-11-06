@@ -4,6 +4,7 @@
 #define ofxGenBaseLayer_h
 
 #include "ofxBaseBehavior.h"
+#include "ofxImGui.h"
 
 namespace ofx {
 	namespace Gen {
@@ -26,6 +27,12 @@ namespace ofx {
 			virtual void update(const float& delta_time) = 0;
 			virtual void draw() {};
 			virtual void bang() {}
+
+			virtual void drawGui(ofxImGui::Settings& settings) {
+				//ofxImGui::BeginWindow(parameter_group_.getName().data(), settings, false);
+				ofxImGui::AddGroup(parameter_group_, settings);
+				//ofxImGui::EndWindow(settings);
+			}
 
 			void setAlpha(const float& alpha) { alpha_ = alpha; };
 			float& getAlpha() { return alpha_; }
