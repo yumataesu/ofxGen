@@ -9,8 +9,8 @@
 #include "ofxGenBaselayer.h"
 #include "ofxGenConstant.h"
 
-#include "ui/ImGuiKnob.h"
-#include "ui/ImGuiTab.h"
+//#include "ui/ImGuiKnob.h"
+//#include "ui/ImGuiTab.h"
 
 namespace ofx {
 namespace Gen {
@@ -27,6 +27,13 @@ public:
 
 	static void setupBackyard();
 	static void drawBackyardGui();
+
+	void draw3D() const { fbo_3d_.draw(0, 0); }
+	void draw2D() const { fbo_2d_.draw(0, 0); }
+
+	ofFbo* get3Dfbo() { return &fbo_3d_; }
+	ofFbo* get2Dfbo() { return &fbo_2d_; }
+	std::shared_ptr<ofFbo>& getResultFbo() { return result_fbo_; }
 
 protected:
 	void renderToFbo();
@@ -47,7 +54,7 @@ private:
 	ofVboMesh quad_;
 	ofShader depth_composite_shader_;
 	ofFbo fbo_2d_, fbo_3d_;
-	ofFbo result_fbo_;
+	std::shared_ptr<ofFbo> result_fbo_;
 	float alpha_;
 };
 }

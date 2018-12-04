@@ -49,6 +49,7 @@ namespace ofx {
 			float alpha_;
 			bool is_3d_;
 			int target_frame_index_;
+			ofBlendMode blendmode_;
 		};
 	}
 }

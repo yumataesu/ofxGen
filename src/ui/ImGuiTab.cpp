@@ -2,7 +2,7 @@
 
 namespace ImGui {
 
-	IMGUI_API bool TabLabels(char **tabLabels, int tabSize, int &tabIndex, int *tabOrder) {
+	IMGUI_API bool TabLabels_(char **tabLabels, int tabSize, int &tabIndex, int *tabOrder) {
 
 		ImGuiStyle& style = ImGui::GetStyle();
 		const ImVec2 framepadding = style.FramePadding;

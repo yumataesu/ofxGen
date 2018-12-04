@@ -38,7 +38,9 @@ namespace Gen {
 
 		fbo_2d_.allocate(settings);
 		fbo_3d_.allocate(settings);
-		result_fbo_.allocate(settings);
+
+		result_fbo_ = std::make_shared<ofFbo>();
+		result_fbo_->allocate(settings);
 
 		ofAddListener(gen_event_, this, &Manager::layerAdded);
 	}
@@ -71,7 +73,7 @@ namespace Gen {
 
 
 	void Manager::draw() const {
-		result_fbo_.draw(0., 0.);
+		result_fbo_->draw(0., 0.);
 	}
 
 
@@ -146,6 +148,8 @@ namespace Gen {
 			ImGui::PushItemWidth(50.5f);
 			if (ImGui::Button("", ImVec2(20, 20))) {
 				this->remove(frm->layer_name);
+				frm->layer_name = "\0";
+				frm->is_3d_scene = false;
 				frm->fbo.begin(); ofClear(0.f, 0.f); frm->fbo.end(); //We have to blackout so avoiding to be left last frame in fbo.
 			}
 			ImGui::EndChild();
@@ -191,9 +195,9 @@ namespace Gen {
 
 			//2D-------------------------------------------------------
 			glDisable(GL_DEPTH_TEST);
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glBlendEquation(GL_FUNC_ADD);
+			//glEnable(GL_BLEND);
+			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			//glBlendEquation(GL_MAX);
 			fbo_2d_.begin();
 			ofClear(0.f, 0.f);
 			for (const auto& frm : frames_) {
@@ -204,7 +208,7 @@ namespace Gen {
 					if (layer != nullptr) alpha = layer->getAlpha();
 					else alpha = 0.f;
 
-					ofSetColor(255 * alpha, 255 * alpha);
+					ofSetColor(255 * alpha, 255 * alpha);	
 					frm->fbo.draw(0, 0);
 				}
 			}
@@ -250,12 +254,12 @@ namespace Gen {
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glBlendEquation(GL_MAX);
 
-			result_fbo_.begin();
+			result_fbo_->begin();
 			ofClear(0.f);
 			ofSetColor(255, 255 * alpha_);
 			fbo_3d_.draw(0, 0);
 			fbo_2d_.draw(0, 0);
-			result_fbo_.end();
+			result_fbo_->end();
 			glDisable(GL_BLEND);
 		}
 
@@ -289,9 +293,9 @@ namespace Gen {
 
 					ImGui::SetDragDropPayload("_Gen", &data.layer_name, sizeof(data.layer_name), ImGuiCond_Once);
 
-					ImGui::BeginDragDropTooltip();
+					//ImGui::BeginDragDropTooltip();
 					ImGui::ImageButton((ImTextureID)(uintptr_t)data.thumbnail->getTextureData().textureID, ImVec2(128, 72), ImVec2(0.f, 0.f), ImVec2(1.f, 1.f), 0);
-					ImGui::EndDragDropTooltip();
+					//ImGui::EndDragDropTooltip();
 					ImGui::EndDragDropSource();
 				}
 				ImGui::EndChild();
