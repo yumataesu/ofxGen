@@ -148,9 +148,7 @@ namespace Gen {
 			ImGui::PushItemWidth(50.5f);
 			if (ImGui::Button("", ImVec2(20, 20))) {
 				this->remove(frm->layer_name);
-				frm->layer_name = "\0";
-				frm->is_3d_scene = false;
-				frm->fbo.begin(); ofClear(0.f, 0.f); frm->fbo.end(); //We have to blackout so avoiding to be left last frame in fbo.
+				frm->clear();
 			}
 			ImGui::EndChild();
 			ImGui::End();

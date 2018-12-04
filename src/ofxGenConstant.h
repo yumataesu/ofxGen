@@ -15,6 +15,12 @@ namespace ofx {
 			std::string layer_name;
 			bool is_3d_scene;
 			ofFbo fbo;
+
+			void clear() {
+				layer_name = "\0";
+				is_3d_scene = false;
+				fbo.begin(); ofClear(0.f, 0.f); fbo.end(); //We have to blackout so avoiding to be left last frame in fbo.
+			}
 		};
 
 		struct BackyardData {
