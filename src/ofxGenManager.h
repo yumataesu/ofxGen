@@ -19,7 +19,7 @@ class Manager : public ofx::Base::BaseManager<BaseLayer> {
 public:
 	Manager(const std::size_t layer_num, const ofFbo::Settings& settings);
 	~Manager();
-	void update(const float& delta_time);
+	virtual void update(const float& delta_time);
 	void draw() const;
 	void bang();
 
@@ -37,9 +37,8 @@ public:
 
 protected:
 	void renderToFbo();
-	void composite();
+	virtual void composite();
 
-private:
 	void layerAdded(GenEvent& event);
 	static std::vector<BackyardData> backyard_data_;
 	ofEvent<GenEvent> gen_event_;

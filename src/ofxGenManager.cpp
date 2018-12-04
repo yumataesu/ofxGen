@@ -184,12 +184,6 @@ namespace Gen {
 					}
 				}
 			}
-		}
-
-
-
-
-		void Manager::composite() {
 
 			//2D-------------------------------------------------------
 			glDisable(GL_DEPTH_TEST);
@@ -206,7 +200,7 @@ namespace Gen {
 					if (layer != nullptr) alpha = layer->getAlpha();
 					else alpha = 0.f;
 
-					ofSetColor(255 * alpha, 255 * alpha);	
+					ofSetColor(255 * alpha, 255 * alpha);
 					frm->fbo.draw(0, 0);
 				}
 			}
@@ -221,7 +215,7 @@ namespace Gen {
 			ofClear(0);
 			depth_composite_shader_.begin();
 			int col_index = 0; int depth_index = 1; int i = 0;
-			
+
 			for (const auto& frm : frames_) {
 				if (frm->is_3d_scene) {
 					std::string col_name = "u_col" + std::to_string(i);
@@ -246,7 +240,12 @@ namespace Gen {
 			quad_.draw();
 			depth_composite_shader_.end();
 			fbo_3d_.end();
+		}
 
+
+
+
+		void Manager::composite() {
 
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -258,6 +257,7 @@ namespace Gen {
 			fbo_3d_.draw(0, 0);
 			fbo_2d_.draw(0, 0);
 			result_fbo_->end();
+
 			glDisable(GL_BLEND);
 		}
 
