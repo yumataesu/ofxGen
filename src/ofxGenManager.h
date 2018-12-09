@@ -20,27 +20,37 @@ namespace Gen {
 class Manager : public ofx::Base::BaseManager<BaseLayer> {
 
 public:
+	Manager() {}
 	Manager(const std::size_t layer_num, const ofFbo::Settings& settings);
-	~Manager();
+	virtual ~Manager();
+
+	Manager(const Manager &mng) = delete;
+	Manager& operator=(const Manager &mng) = delete;
+	
 	virtual void update(const float& delta_time);
 	void draw() const;
 	void bang();
 
-	void drawFrameGui();
+	void drawFrameGui(const std::string& parent_name);
 
 	static void setupBackyard();
 	static void drawBackyardGui();
 
 	void draw3D() const { fbo_3d_.draw(0, 0); }
 	void draw2D() const { fbo_2d_.draw(0, 0); }
+	void draw3D(int x, int y) const { fbo_3d_.draw(x, y); }
+	void draw2D(int x, int y) const { fbo_2d_.draw(x, y); }
+	void draw3D(int x, int y, int w, int h) const { fbo_3d_.draw(x, y, w, h); }
+	void draw2D(int x, int y, int w, int h) const { fbo_2d_.draw(x, y, w, h); }
 
-	ofFbo* get3Dfbo() { return &fbo_3d_; }
-	ofFbo* get2Dfbo() { return &fbo_2d_; }
+	ofFbo& get3Dfbo() { return fbo_3d_; }
+	ofFbo& get2Dfbo() { return fbo_2d_; }
 	std::shared_ptr<ofFbo>& getResultFbo() { return result_fbo_; }
 
 protected:
 	void renderToFbo();
-	virtual void composite();
+	void composite();
+	virtual void postprocess() {};
 
 	void layerAdded(GenEvent& event);
 	static std::vector<BackyardData> backyard_data_;

@@ -67,6 +67,7 @@ namespace Gen {
 
 		this->renderToFbo();
 		this->composite();
+		this->postprocess();
 	}
 
 
@@ -98,13 +99,13 @@ namespace Gen {
 
 
 
-	void Manager::drawFrameGui() {
+	void Manager::drawFrameGui(const std::string& parent_name) {
 		auto& style = ImGui::GetStyle();
 		style.FramePadding = ImVec2(2.f, 2.f);
 
 		int index = 0;
 		for (const auto& frm : frames_) {
-			std::string window_title = "0" + std::to_string(index);
+			std::string window_title = "0" + std::to_string(index) + "|" + parent_name;
 			ImGui::Begin(window_title.data());
 			auto layer = this->getByName(frm->layer_name);
 
@@ -286,7 +287,7 @@ namespace Gen {
 			for (auto& data : backyard_data_) {
 				std::string window_title = "GEN-PREVIEW" + std::to_string(view_index);
 				ImGui::BeginChild(window_title.data(), ImVec2(77, 77 * 9 / 16));
-				ImGui::ImageButton((ImTextureID)(uintptr_t)data.thumbnail->getTextureData().textureID, ImVec2(63, 63 * 9 / 16));
+				if(data.thumbnail->isAllocated()) ImGui::ImageButton((ImTextureID)(uintptr_t)data.thumbnail->getTextureData().textureID, ImVec2(63, 63 * 9 / 16));
 				if (ImGui::BeginDragDropSource()) {
 
 					ImGui::SetDragDropPayload("_Gen", &data.layer_name, sizeof(data.layer_name), ImGuiCond_Once);
