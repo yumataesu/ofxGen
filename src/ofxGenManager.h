@@ -3,7 +3,10 @@
 #ifndef ofxGenManager_h
 #define ofxGenManager_h
 
-#include "ofMain.h"
+#include "ofVboMesh.h"
+#include "ofShader.h"
+#include "ofGraphics.h"
+#include "ofEasyCam.h"
 #include "ofxBasement.h"
 
 #include "ofxGenBaselayer.h"
