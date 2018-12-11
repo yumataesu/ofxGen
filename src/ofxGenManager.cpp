@@ -27,12 +27,10 @@ namespace Gen {
 		frames_.reserve(layer_num_);
 		for (std::size_t i = 0; i < layer_num_; ++i) {
 			auto frm = std::make_unique<Frame>();
-			frm->index = -1;
-			frm->is_3d_scene = false;
-			frm->layer_name = "\0";
-
 			frm->fbo.allocate(settings);
-			frm->fbo.begin(); ofClear(0); frm->fbo.end();
+			frm->index = -1;
+			frm->clear();
+
 			frames_.emplace_back(std::move(frm));
 		}
 
