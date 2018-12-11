@@ -8,6 +8,7 @@ namespace Gen {
 		: layer_num_(layer_num)
 		, time_(0.f) 
 		, alpha_(1.f)
+		, delta_time_(0.)
 	{
 		depth_composite_shader_.load("composite/depth_composite");
 		quad_.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
@@ -53,14 +54,15 @@ namespace Gen {
 
 
 
-	void Manager::update(const float& delta_time) {
+	void Manager::update(ofEventArgs& arg) {
+		delta_time_ = ofGetLastFrameTime();
 		for (const auto& layer : this->process_map) {
 			if (layer.second->getAlpha() > 0.f) {
-				layer.second->update(delta_time);
+				layer.second->update(delta_time_);
 			}
 		}
 
-		time_ += delta_time * 0.02f;
+		time_ += delta_time_ * 0.02f;
 		cam_.orbit(360 * sin(time_ + ofNoise(time_)), 360 * cos(time_ + 2 + ofNoise(time_ + 10.f)), 750 + 500 * sin(time_));
 
 		this->renderToFbo();
@@ -284,8 +286,8 @@ namespace Gen {
 			int view_index = 1;
 			for (auto& data : backyard_data_) {
 				std::string window_title = "GEN-PREVIEW" + std::to_string(view_index);
-				ImGui::BeginChild(window_title.data(), ImVec2(77, 77 * 9 / 16));
-				if(data.thumbnail->isAllocated()) ImGui::ImageButton((ImTextureID)(uintptr_t)data.thumbnail->getTextureData().textureID, ImVec2(63, 63 * 9 / 16));
+				ImGui::BeginChild(window_title.data(), ImVec2(83, 50));
+				if(data.thumbnail->isAllocated()) ImGui::ImageButton((ImTextureID)(uintptr_t)data.thumbnail->getTextureData().textureID, ImVec2(80, 45));
 				if (ImGui::BeginDragDropSource()) {
 
 					ImGui::SetDragDropPayload("_Gen", &data.layer_name, sizeof(data.layer_name), ImGuiCond_Once);
@@ -296,7 +298,7 @@ namespace Gen {
 					ImGui::EndDragDropSource();
 				}
 				ImGui::EndChild();
-				if (view_index % 6 != 0) ImGui::SameLine();
+				if (view_index % 8 != 0) ImGui::SameLine();
 				view_index++;
 			}
 			ImGui::End();

@@ -27,7 +27,7 @@ public:
 	Manager(const Manager &mng) = delete;
 	Manager& operator=(const Manager &mng) = delete;
 	
-	virtual void update(const float& delta_time);
+	virtual void update(ofEventArgs& arg);
 	void draw() const;
 	void bang();
 
