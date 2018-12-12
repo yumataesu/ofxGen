@@ -24,7 +24,7 @@ namespace ofx {
 			{}
 
 			virtual ~BaseLayer() {};
-			virtual void update(const float& delta_time) = 0;
+			virtual void update(const double& delta_time) = 0;
 			virtual void draw() {};
 			virtual void bang() {}
 

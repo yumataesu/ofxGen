@@ -8,7 +8,6 @@ namespace Gen {
 		: layer_num_(layer_num)
 		, time_(0.f) 
 		, alpha_(1.f)
-		, delta_time_(0.)
 	{
 		depth_composite_shader_.load("composite/depth_composite");
 		quad_.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
