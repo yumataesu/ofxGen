@@ -2,7 +2,7 @@
 
 namespace ofx {
 namespace Gen {
-std::vector<BackyardData> Manager::backyard_data_;
+std::map <std::string, std::shared_ptr<ofTexture>> Manager::backyard_data_map_;
 
 Manager::Manager(const std::size_t layer_num, const ofFbo::Settings& settings)
 	: layer_num_(layer_num)
@@ -311,16 +311,16 @@ void Manager::drawBackyardGui() {
 	style.FramePadding = ImVec2(2.f, 2.f);
 
 	int view_index = 1;
-	for (auto& data : backyard_data_) {
+	for (auto& data : backyard_data_map_) {
 		std::string window_title = "GEN-PREVIEW" + std::to_string(view_index);
 		ImGui::BeginChild(window_title.data(), ImVec2(83, 50));
-		if (data.thumbnail->isAllocated()) ImGui::ImageButton((ImTextureID)(uintptr_t)data.thumbnail->getTextureData().textureID, ImVec2(80, 45));
+		if (data.second->isAllocated()) ImGui::ImageButton((ImTextureID)(uintptr_t)data.second->getTextureData().textureID, ImVec2(80, 45));
 		if (ImGui::BeginDragDropSource()) {
 
-			ImGui::SetDragDropPayload("_Gen", &data.layer_name, sizeof(data.layer_name), ImGuiCond_Once);
+			ImGui::SetDragDropPayload("_Gen", &data.first, sizeof(data.first), ImGuiCond_Once);
 
 			//ImGui::BeginDragDropTooltip();
-			ImGui::ImageButton((ImTextureID)(uintptr_t)data.thumbnail->getTextureData().textureID, ImVec2(128, 72), ImVec2(0.f, 0.f), ImVec2(1.f, 1.f), 0);
+			ImGui::ImageButton((ImTextureID)(uintptr_t)data.second->getTextureData().textureID, ImVec2(128, 72), ImVec2(0.f, 0.f), ImVec2(1.f, 1.f), 0);
 			//ImGui::EndDragDropTooltip();
 			ImGui::EndDragDropSource();
 		}

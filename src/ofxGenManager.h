@@ -55,7 +55,7 @@ protected:
 	virtual void postprocess() {};
 
 	void layerAdded(GenEvent& event);
-	static std::vector<BackyardData> backyard_data_;
+	static std::map<std::string, std::shared_ptr<ofTexture>> backyard_data_map_;
 	ofEvent<GenEvent> gen_event_;
 
 	std::size_t layer_num_;
