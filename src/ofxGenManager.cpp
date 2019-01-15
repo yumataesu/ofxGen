@@ -97,19 +97,29 @@ void Manager::layerAdded(GenEvent& event) {
 
 
 
-
 void Manager::drawFrameGui(const std::string& parent_name) {
 
 	ImGuiWindowFlags window_flags = 0;
 	window_flags |= ImGuiWindowFlags_NoScrollWithMouse;
 	window_flags |= ImGuiWindowFlags_NoCollapse;
+	window_flags |= ImGuiWindowFlags_NoTitleBar;
 
 	auto& style = ImGui::GetStyle();
 	style.FramePadding = ImVec2(2.f, 2.f);
 
+	ImVec4* colors = ImGui::GetStyle().Colors;
+
+	ImVec2 pos = ImVec2(2, 2);
+	ImVec2 size = ImVec2(176, 170);
+
 	int index = 0;
 	for (const auto& frm : frames_) {
+		colors[ImGuiCol_Button] = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
+		colors[ImGuiCol_ButtonHovered] = ImVec4(0.1f, 0.1f, 0.1f, 1.00f);
+		colors[ImGuiCol_ButtonActive] = ImVec4(0.1f, 0.1f, 0.1f, 1.00f);
 		std::string window_title = "##0" + std::to_string(index) + "|" + parent_name;
+		//ImGui::SetNextWindowPos(pos);
+		ImGui::SetNextWindowSize(size);
 		ImGui::Begin(window_title.data(), 0, window_flags);
 		auto layer = this->getByName(frm->layer_name);
 
@@ -149,6 +159,9 @@ void Manager::drawFrameGui(const std::string& parent_name) {
 		// Layer remove UI --------------------------------------------------
 		//
 		//
+		colors[ImGuiCol_Button] = ImVec4(0.00f, 0.10f, 0.38f, 1.00f);
+		colors[ImGuiCol_ButtonHovered] = ImVec4(0.00f, 0.59f, 0.66f, 1.00f);
+		colors[ImGuiCol_ButtonActive] = ImVec4(0.00f, 1.00f, 1.00f, 1.00f);
 		ImGui::BeginChild(window_title.data(), ImVec2(160, 62), true);
 		ImGui::PushItemWidth(50.5f);
 		if (ImGui::Button("", ImVec2(20, 20))) {
@@ -159,12 +172,16 @@ void Manager::drawFrameGui(const std::string& parent_name) {
 		ImGui::End();
 
 		index++;
-		//pos.x += size.x;
-		//if(index % 4 == 0) {
-		//    pos.x = 2;
-		//    pos.y += size.y + 2;
-		//}
+		pos.x += size.x;
+		if(index % 4 == 0) {
+		    pos.x = 2;
+		    pos.y += size.y + 2;
+		}
 	}
+
+	//colors[ImGuiCol_Button] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+	//colors[ImGuiCol_ButtonHovered] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+	//colors[ImGuiCol_ButtonActive] = ImVec4(0.00f, 0.00f, 1.00f, 1.00f);
 }
 
 
@@ -286,7 +303,13 @@ void Manager::setupBackyard() {
 
 
 void Manager::drawBackyardGui() {
+
+	auto& style = ImGui::GetStyle();
+	style.FramePadding = ImVec2(2.f, 4.f);
+
 	ImGui::Begin("BACKYARD");
+	style.FramePadding = ImVec2(2.f, 2.f);
+
 	int view_index = 1;
 	for (auto& data : backyard_data_) {
 		std::string window_title = "GEN-PREVIEW" + std::to_string(view_index);

@@ -47,6 +47,8 @@ public:
 	ofFbo& get2Dfbo() { return fbo_2d_; }
 	std::shared_ptr<ofFbo>& getResultFbo() { return result_fbo_; }
 
+	std::map<std::string, std::shared_ptr<BaseLayer>>& getProcessMap() { return process_map; };
+
 protected:
 	void renderToFbo();
 	void composite();
