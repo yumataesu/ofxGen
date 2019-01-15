@@ -14,6 +14,7 @@ namespace ofx {
 			int index;
 			std::string layer_name;
 			bool is_3d_scene;
+			std::shared_ptr<ofTexture> thumbnail;
 			ofFbo fbo;
 
 			void clear() {
@@ -26,6 +27,7 @@ namespace ofx {
 		struct GenEvent {
 			std::string target_layer_name;
 			int taeget_fbo_index;
+			std::shared_ptr<ofTexture> thumbnail;
 		};
 	}
 }

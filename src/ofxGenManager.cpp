@@ -122,10 +122,20 @@ void Manager::drawFrameGui(const std::string& parent_name) {
 		ImGui::SetNextWindowSize(size);
 		ImGui::Begin(window_title.data(), 0, window_flags);
 		auto layer = this->getByName(frm->layer_name);
-
-		if (ImGui::ImageButton((ImTextureID)(uintptr_t)frm->fbo.getTexture().getTextureData().textureID, ImVec2(128, 128 / 16 * 9), ImVec2(0, 0), ImVec2(1, 1), 0)) {
-			if (layer != nullptr) layer->bang();
+		if (layer != nullptr) {
+			if (layer->getAlpha() > 0.f) {
+				if (ImGui::ImageButton((ImTextureID)(uintptr_t) frm->fbo.getTexture().getTextureData().textureID, ImVec2(128, 128 / 16 * 9), ImVec2(0, 0), ImVec2(1, 1), 0)) {
+					layer->bang();
+				}
+			}
+			else {
+				if(backyard_data_map_[frm->layer_name]->isAllocated()) ImGui::ImageButton((ImTextureID)(uintptr_t) backyard_data_map_[frm->layer_name]->getTextureData().textureID, ImVec2(128, 128 / 16 * 9), ImVec2(0, 0), ImVec2(1, 1), 0);
+			}
 		}
+		else {
+			ImGui::ImageButton((ImTextureID)(uintptr_t) frm->fbo.getTexture().getTextureData().textureID, ImVec2(128, 128 / 16 * 9), ImVec2(0, 0), ImVec2(1, 1), 0);
+		}
+
 
 		ImGui::SameLine();
 		if (ImGui::BeginDragDropTarget()) {
@@ -143,6 +153,7 @@ void Manager::drawFrameGui(const std::string& parent_name) {
 				GenEvent new_event;
 				new_event.taeget_fbo_index = index;
 				new_event.target_layer_name = target_layer_name;
+				new_event.thumbnail = backyard_data_map_[target_layer_name];
 
 				ofNotifyEvent(gen_event_, new_event, this);
 			}
@@ -290,11 +301,9 @@ void Manager::setupBackyard() {
 	ofDisableArbTex();
 	for (auto& name : registered_names()) {
 		BackyardData data;
-		std::unique_ptr<ofTexture> t = std::make_unique<ofTexture>();
+		auto t = std::make_unique<ofTexture>();
 		ofLoadImage(*t, "generative/" + name + ".png");
-		data.thumbnail = std::move(t);
-		data.layer_name = name;
-		backyard_data_.emplace_back(data);
+		backyard_data_map_[name] = std::move(t);
 	}
 	ofEnableArbTex();
 }
