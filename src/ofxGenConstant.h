@@ -23,11 +23,6 @@ namespace ofx {
 			}
 		};
 
-		struct BackyardData {
-			std::shared_ptr<ofTexture> thumbnail;
-			std::string layer_name;
-		};
-
 		struct GenEvent {
 			std::string target_layer_name;
 			int taeget_fbo_index;
