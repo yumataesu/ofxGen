@@ -8,6 +8,7 @@ Manager::Manager(const std::size_t layer_num, const ofFbo::Settings& settings)
 	: layer_num_(layer_num)
 	, time_(0.f)
 	, alpha_(1.f)
+	, cam_speed_(1.f)
 {
 	depth_composite_shader_.load("composite/depth_composite");
 	quad_.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
@@ -61,8 +62,8 @@ void Manager::update(ofEventArgs& arg) {
 		}
 	}
 
-	time_ += delta_time_ * 0.02f;
-	cam_.orbit(360 * sin(time_ + ofNoise(time_)), 360 * cos(time_ + 2 + ofNoise(time_ + 10.f)), 750 + 500 * sin(time_));
+	time_ += delta_time_ * cam_speed_;
+	cam_.orbit(360 * sin(time_ + ofNoise(time_)), 360 * cos(time_ + 2 + ofNoise(time_ + 10.f)), cam_distance_);
 
 	this->renderToFbo();
 	this->composite();
@@ -110,7 +111,7 @@ void Manager::drawFrameGui(const std::string& parent_name) {
 	ImVec4* colors = ImGui::GetStyle().Colors;
 
 	ImVec2 pos = ImVec2(2, 2);
-	ImVec2 size = ImVec2(176, 170);
+	ImVec2 size = ImVec2(206, 160);
 
 	int index = 0;
 	for (const auto& frm : frames_) {
@@ -167,24 +168,33 @@ void Manager::drawFrameGui(const std::string& parent_name) {
 			ImGui::VSliderFloat("##v", ImVec2(24, 128 / 16 * 9), &zero, 0.f, 1.f, "");
 		}
 
+
+		ImGui::SameLine();
+		ImGui::PushItemWidth(50.5f);
+		if (ImGui::Button("", ImVec2(20, 20))) {
+			this->remove(frm->layer_name);
+			frm->clear();
+		}
+
+
 		// Layer remove UI --------------------------------------------------
 		//
 		//
 		colors[ImGuiCol_Button] = ImVec4(0.00f, 0.10f, 0.38f, 1.00f);
 		colors[ImGuiCol_ButtonHovered] = ImVec4(0.00f, 0.59f, 0.66f, 1.00f);
 		colors[ImGuiCol_ButtonActive] = ImVec4(0.00f, 1.00f, 1.00f, 1.00f);
-		ImGui::BeginChild(window_title.data(), ImVec2(160, 62), true);
-		ImGui::PushItemWidth(50.5f);
-		if (ImGui::Button("", ImVec2(20, 20))) {
-			this->remove(frm->layer_name);
-			frm->clear();
+		ImGui::BeginChild(window_title.data(), ImVec2(184, 62), true);
+		
+
+		if (layer != nullptr) {
+			layer->drawGui();
 		}
 		ImGui::EndChild();
 		ImGui::End();
 
 		index++;
 		pos.x += size.x;
-		if(index % 4 == 0) {
+		if(index % 2 == 0) {
 		    pos.x = 2;
 		    pos.y += size.y + 2;
 		}
@@ -276,6 +286,14 @@ void Manager::renderToFbo() {
 }
 
 
+void Manager::drawUtilGui() {
+	ImGui::Begin("Camera");
+	ImGui::SliderFloat("Distance", &cam_distance_, 10.f, 1000.f);
+	ImGui::SliderFloat("Speed", &cam_speed_, 0.1f, 10.0f);
+	ImGui::End();
+}
+
+
 
 
 void Manager::composite() {
@@ -300,7 +318,6 @@ void Manager::composite() {
 void Manager::setupBackyard() {
 	ofDisableArbTex();
 	for (auto& name : registered_names()) {
-		BackyardData data;
 		auto t = std::make_unique<ofTexture>();
 		ofLoadImage(*t, "generative/" + name + ".png");
 		backyard_data_map_[name] = std::move(t);
@@ -322,19 +339,15 @@ void Manager::drawBackyardGui() {
 	int view_index = 1;
 	for (auto& data : backyard_data_map_) {
 		std::string window_title = "GEN-PREVIEW" + std::to_string(view_index);
-		ImGui::BeginChild(window_title.data(), ImVec2(83, 50));
-		if (data.second->isAllocated()) ImGui::ImageButton((ImTextureID)(uintptr_t)data.second->getTextureData().textureID, ImVec2(80, 45));
+		ImGui::BeginChild(window_title.data(), ImVec2(75, 42));
+		if (data.second->isAllocated()) ImGui::ImageButton((ImTextureID)(uintptr_t)data.second->getTextureData().textureID, ImVec2(66, 37));
 		if (ImGui::BeginDragDropSource()) {
-
 			ImGui::SetDragDropPayload("_Gen", &data.first, sizeof(data.first), ImGuiCond_Once);
-
-			//ImGui::BeginDragDropTooltip();
 			ImGui::ImageButton((ImTextureID)(uintptr_t)data.second->getTextureData().textureID, ImVec2(128, 72), ImVec2(0.f, 0.f), ImVec2(1.f, 1.f), 0);
-			//ImGui::EndDragDropTooltip();
 			ImGui::EndDragDropSource();
 		}
 		ImGui::EndChild();
-		if (view_index % 8 != 0) ImGui::SameLine();
+		if (view_index % 4 != 0) ImGui::SameLine();
 		view_index++;
 	}
 	ImGui::End();
