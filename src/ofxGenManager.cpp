@@ -42,6 +42,8 @@ Manager::Manager(const std::size_t layer_num, const ofFbo::Settings& settings)
 	result_fbo_->allocate(settings);
 
 	ofAddListener(gen_event_, this, &Manager::layerAdded);
+	ofAddListener(ofEvents().update, this, &Manager::update, OF_EVENT_ORDER_APP);
+
 }
 
 
@@ -49,6 +51,8 @@ Manager::Manager(const std::size_t layer_num, const ofFbo::Settings& settings)
 
 Manager::~Manager() {
 	ofRemoveListener(gen_event_, this, &Manager::layerAdded);
+	ofRemoveListener(ofEvents().update, this, &Manager::update, OF_EVENT_ORDER_APP);
+
 }
 
 
