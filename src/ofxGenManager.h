@@ -32,6 +32,7 @@ public:
 	void bang();
 
 	void drawFrameGui(const std::string& parent_name);
+	void drawUtilGui();
 
 	static void setupBackyard();
 	static void drawBackyardGui();
@@ -62,6 +63,7 @@ protected:
 	std::vector<std::unique_ptr<Frame>> frames_;
 	
 	ofEasyCam cam_;
+	float cam_speed_, cam_distance_;
 	float time_;
 
 
