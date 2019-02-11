@@ -8,7 +8,8 @@ Manager::Manager(const std::size_t layer_num, const ofFbo::Settings& settings)
 	: layer_num_(layer_num)
 	, time_(0.f)
 	, alpha_(1.f)
-	, cam_speed_(1.f)
+	, cam_speed_(0.1f)
+	, cam_distance_(300.f)
 {
 	depth_composite_shader_.load("composite/depth_composite");
 	quad_.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
