@@ -99,6 +99,8 @@ void Manager::layerAdded(GenEvent& event) {
 
 	auto layer = add(event.target_layer_name);
 	layer->setTarget(event.taeget_fbo_index);
+	layer->width = result_fbo_->getWidth();
+	layer->height = result_fbo_->getHeight();
 }
 
 
