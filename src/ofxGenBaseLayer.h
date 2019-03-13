@@ -45,6 +45,7 @@ public:
 	void set2D() { is_3d_ = false; }
 	bool is3D() { return is_3d_; }
 
+	float width, height;
 protected:
 	float alpha_;
 	bool is_3d_;
