@@ -279,7 +279,7 @@ void Manager::renderToFbo() {
 		if (frm->is_3d_scene) {
 			std::string col_name = "u_col" + std::to_string(i);
 			std::string depth_name = "u_depth" + std::to_string(i);
-			auto layer = this->getByName(frm->layer_name);
+			const auto& layer = this->getByName(frm->layer_name);
 			float alpha = 0.f;
 			if (layer != nullptr) {
 				alpha = layer->getAlpha();
