@@ -101,6 +101,7 @@ void Manager::layerAdded(GenEvent& event) {
 	layer->setTarget(event.taeget_fbo_index);
 	layer->width = result_fbo_->getWidth();
 	layer->height = result_fbo_->getHeight();
+	layer->setName(event.target_layer_name);
 }
 
 
