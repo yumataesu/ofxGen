@@ -204,9 +204,7 @@ void Manager::drawFrameGui(const std::string& parent_name) {
 
 		ImGui::PushItemWidth(window_size.x * 0.7);
 		float v = 0.f;
-		ImGui::Text("Params:");
-		//ImGui::SliderFloat("tesdt", &v, 0.0f, 100.f);
-		//ImGui::SliderFloat("tesdt", &v, 0.0f, 100.f);
+		ImGui::Text("Parameters:");
 		if (layer != nullptr) {
 			layer->drawGui();
 		}
