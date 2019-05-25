@@ -8,7 +8,8 @@
 
 namespace ofx {
 namespace Gen {
-class BaseLayer : public ofx::Base::Behavior {
+class BaseLayer : public ofx::Base::Behavior 
+{
 public:
 
 	BaseLayer()
@@ -29,9 +30,7 @@ public:
 	virtual void bang() {}
 
 	virtual void drawGui() {
-		//	ofxImGui::BeginWindow(parameter_group_.getName().data(), settings, false);
-		//	ofxImGui::AddGroup(parameter_group_, settings);
-		//	ofxImGui::EndWindow(settings);
+		ofxImGui::AddGroup(parameter_group_);
 	}
 
 	void setAlpha(const float& alpha) { alpha_ = alpha; };

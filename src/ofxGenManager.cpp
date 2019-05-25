@@ -125,9 +125,10 @@ void Manager::drawFrameGui(const std::string& parent_name) {
 		colors[ImGuiCol_ButtonActive] = ImVec4(0.1f, 0.1f, 0.1f, 1.00f);
 		style.WindowPadding = push_window_padding;
 		std::string window_title = "0" + std::to_string(index) + " | " + parent_name;
-		//ImGui::SetNextWindowPos(pos);
-		//ImGui::SetNextWindowSize(size);
+		style.FramePadding = ImVec2(2.f, 3.f);
 		ImGui::Begin(window_title.data(), 0, window_flags);
+		style.FramePadding = ImVec2(2.f, 2.f);
+
 		auto layer = this->getByName(frm->layer_name);
 
 		ImVec2 window_size = ImGui::GetWindowSize();
@@ -347,7 +348,7 @@ void Manager::setupBackyard() {
 void Manager::drawBackyardGui() {
 
 	auto& style = ImGui::GetStyle();
-	style.FramePadding = ImVec2(2.f, 4.f);
+	style.FramePadding = ImVec2(2.f, 3.f);
 
 	ImGui::Begin("BACKYARD");
 	style.FramePadding = ImVec2(2.f, 2.f);
