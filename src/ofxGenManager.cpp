@@ -97,10 +97,8 @@ void Manager::layerAdded(GenEvent& event) {
 	if (it != this->process_map.end())
 		return;
 
-	auto layer = add(event.target_layer_name);
+	auto layer = add(event.target_layer_name, (int)result_fbo_->getWidth(), (int)result_fbo_->getHeight());
 	layer->setTarget(event.taeget_fbo_index);
-	layer->width = result_fbo_->getWidth();
-	layer->height = result_fbo_->getHeight();
 	layer->setName(event.target_layer_name);
 }
 

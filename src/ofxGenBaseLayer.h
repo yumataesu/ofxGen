@@ -18,10 +18,12 @@ public:
 		, target_frame_index_(-1)
 	{}
 
-	BaseLayer(std::size_t target_frame_index)
+	BaseLayer(int width, int height)
 		: is_3d_(false)
 		, alpha_(0.f)
-		, target_frame_index_(target_frame_index)
+		, target_frame_index_(-1)
+		, width(width)
+		, height(height)
 	{}
 
 	virtual ~BaseLayer() {};
