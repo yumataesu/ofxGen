@@ -81,7 +81,7 @@ void Manager::update(ofEventArgs& arg) {
 
 	time_ += delta_time_ * cam_speed_;
 
-	cam_.orbit(time_, time_, cam_distance_);
+	//cam_.orbit(time_, time_, cam_distance_);
 
 	for (auto& light : lights) {
 		light.update(delta_time_);
@@ -110,7 +110,7 @@ void Manager::drawFrameGui(const std::string & parent_name) {
 	ImGuiWindowFlags window_flags = 0;
 	window_flags |= ImGuiWindowFlags_NoScrollWithMouse;
 	window_flags |= ImGuiWindowFlags_NoCollapse;
-	//window_flags |= ImGuiWindowFlags_NoTitleBar;
+	window_flags |= ImGuiWindowFlags_NoTitleBar;
 
 	auto& style = ImGui::GetStyle();
 	style.FramePadding = ImVec2(8.f, 2.f);
@@ -139,6 +139,9 @@ void Manager::drawFrameGui(const std::string & parent_name) {
 		if (layer != nullptr) {
 			if (layer->getAlpha() > 0.f) {
 				if (ImGui::ImageButton((ImTextureID)(uintptr_t)frm->fbo.getTexture(0).getTextureData().textureID, thumbnail_size, ImVec2(0, 0), ImVec2(1, 1), 0)) {
+					layer->bang();
+				}
+				if (ImGui::ImageButton((ImTextureID)(uintptr_t)frm->fbo.getTexture(1).getTextureData().textureID, thumbnail_size, ImVec2(0, 0), ImVec2(1, 1), 0)) {
 					layer->bang();
 				}
 			}
@@ -317,13 +320,22 @@ void Manager::renderToFbo() {
 
 
 void Manager::drawUtilGui() {
-	ImGui::Begin("Camera");
+	ImGui::Begin("Util");
+	ImGui::Text("Camera");
 	ImGui::SliderFloat("Distance", &cam_distance_, 10.f, 1000.f);
 	ImGui::SliderFloat("Speed", &cam_speed_, 0.1f, 30.0f);
+
+	for (auto& l : lights) {
+		l.drawGui();
+	}
 	ImGui::End();
 }
 
-
+void Manager::drawUtilGuiShared() {
+	ImGui::Begin("Util-shared");
+	ofx::Gen::Light::drawUtilGuiShared();
+	ImGui::End();
+}
 
 
 void Manager::composite() {
@@ -348,19 +360,18 @@ void Manager::lightingPass() {
 	ssao->process(fbo_3d_.getTexture(1), fbo_3d_.getTexture(0), view_, cam_.getProjectionMatrix());
 
 	final_fbo_.begin();
-	ofClear(0);
+	//ofClear(0);
 	lighting_shader_.begin();
-	lighting_shader_.setUniformTexture("color_tex", fbo_3d_.getTexture(0), 0);
-	lighting_shader_.setUniformTexture("position_tex", fbo_3d_.getTexture(1), 1);
-	lighting_shader_.setUniformTexture("ssao", ssao->getTexture(), 2);
-	lighting_shader_.setUniformMatrix4f("view", view_);
-
-	lighting_shader_.setUniform1i("light_num", lights.size());
-	for (int i = 0; i < lights.size(); ++i) {
-		lighting_shader_.setUniform4fv("lights[" + to_string(i) + "].diffuse", &lights[i].diffuse_color[0], 1);
-		lighting_shader_.setUniform3fv("lights[" + to_string(i) + "].position", &lights[i].getGlobalPosition()[0], 1);
-		//lighting_shader_.setUniform1iv("lights[" + to_string(i) + "].isDirectinal", &lights[i].is_directional, 1);
-	}
+	//lighting_shader_.setUniformTexture("color_tex", fbo_3d_.getTexture(0), 0);
+	//lighting_shader_.setUniformTexture("position_tex", fbo_3d_.getTexture(1), 1);
+	lighting_shader_.setUniformTexture("u_ssao", ssao->getTexture(), 4);
+	//lighting_shader_.setUniformMatrix4f("view", view_);
+	//lighting_shader_.setUniform1i("light_num", lights.size());
+	//for (int i = 0; i < lights.size(); ++i) {
+	//	lighting_shader_.setUniform4fv("lights[" + to_string(i) + "].diffuse", &lights[i].diffuse_color[0], 1);
+	//	lighting_shader_.setUniform3fv("lights[" + to_string(i) + "].position", &lights[i].getGlobalPosition()[0], 1);
+	//	//lighting_shader_.setUniform1iv("lights[" + to_string(i) + "].isDirectinal", &lights[i].is_directional, 1);
+	//}
 	quad_.draw();
 	lighting_shader_.end();
 	final_fbo_.end();

@@ -27,6 +27,7 @@ public:
 
 	void drawFrameGui(const std::string& parent_name);
 	void drawUtilGui();
+	static void drawUtilGuiShared();
 
 	static void setupBackyard();
 	static void drawBackyardGui();
@@ -49,6 +50,7 @@ public:
 	ofFbo& get3Dfbo() { return fbo_3d_; }
 	ofFbo& get2Dfbo() { return fbo_2d_; }
 	std::shared_ptr<ofFbo>& getResultFbo() { return result_fbo_; }
+	ofTexture& drawSSAO() { return ssao->getTexture(); }
 
 	std::map<std::string, std::shared_ptr<BaseLayer>>& getProcessMap() { return process_map; };
 	std::function<void(int)> solo = [&](int index) {
@@ -85,7 +87,7 @@ protected:
 	float alpha_;
 
 	//camera
-	ofx::Gen::Camera cam_;
+	ofEasyCam cam_;
 	glm::mat4 view_;
 	float cam_speed_, cam_distance_;
 	float time_;
