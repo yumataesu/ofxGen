@@ -6,9 +6,9 @@
 #include "ofxGenManager.h"
 
 namespace ofx {
-	namespace Gen {
+namespace Gen {
 
-	};
+};
 };
 
 using ofxGen = ofx::Gen::Manager;

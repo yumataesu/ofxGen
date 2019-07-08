@@ -5,10 +5,11 @@
 
 #include "ofxBaseBehavior.h"
 #include "ofxImGui.h"
+#include "ofxAutoReloadedShader.h"
 
 namespace ofx {
 namespace Gen {
-class BaseLayer : public ofx::Base::Behavior 
+class BaseLayer : public ofx::Base::Behavior
 {
 public:
 
@@ -47,6 +48,7 @@ public:
 	bool is3D() { return is_3d_; }
 
 	float width, height;
+	ofxAutoReloadedShader render_shader;
 protected:
 	float alpha_;
 	bool is_3d_;
