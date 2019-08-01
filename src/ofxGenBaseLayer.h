@@ -12,12 +12,12 @@ namespace Gen {
 class BaseLayer : public ofx::Base::Behavior
 {
 public:
-
 	BaseLayer()
 		: is_3d_(false)
 		, alpha_(0.f)
 		, target_frame_index_(-1)
-	{}
+	{
+	}
 
 	BaseLayer(int width, int height)
 		: is_3d_(false)
@@ -46,9 +46,9 @@ public:
 	void set3D() { is_3d_ = true; }
 	void set2D() { is_3d_ = false; }
 	bool is3D() { return is_3d_; }
-
-	float width, height;
 	ofxAutoReloadedShader render_shader;
+	float width, height;
+
 protected:
 	float alpha_;
 	bool is_3d_;

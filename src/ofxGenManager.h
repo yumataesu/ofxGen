@@ -20,24 +20,26 @@ class Manager : public ofx::Base::BaseManager<BaseLayer>
 
 public:
 	Manager() {}
-	Manager(const std::size_t layer_num, const ofFbo::Settings& settings);
+	Manager(const std::size_t layer_num, ofFbo::Settings& settings);
 	virtual ~Manager();
 	Manager(const Manager& mng) = delete;
 	Manager& operator=(const Manager& mng) = delete;
 
 	void drawFrameGui(const std::string& parent_name);
 	void drawUtilGui();
-	static void drawUtilGuiShared();
 
 	static void setupBackyard();
 	static void drawBackyardGui();
+
+	int getWidth() { return final_fbo_.getWidth(); }
+	int getHeight() { return final_fbo_.getHeight(); }
 
 	void draw() const;
 	void draw(int x, int y) const;
 	void draw(int x, int y, int w, int h) const;
 
 	void drawFinal();
-	
+	void drawSSAO() { ssao->getTexture().draw(0, 0); }
 	void draw3D(int attachpoint = 0) const;
 	void draw3D(int x, int y, int attachpoint = 0) const;
 	void draw3D(int x, int y, int w, int h, int attachpoint = 0) const;
@@ -50,7 +52,6 @@ public:
 	ofFbo& get3Dfbo() { return fbo_3d_; }
 	ofFbo& get2Dfbo() { return fbo_2d_; }
 	std::shared_ptr<ofFbo>& getResultFbo() { return result_fbo_; }
-	ofTexture& drawSSAO() { return ssao->getTexture(); }
 
 	std::map<std::string, std::shared_ptr<BaseLayer>>& getProcessMap() { return process_map; };
 	std::function<void(int)> solo = [&](int index) {
@@ -62,6 +63,18 @@ public:
 			else {
 				auto layer = this->getByName(frames_[i]->layer_name);
 				if (layer) { layer->setAlpha(0.f); }
+			}
+		}
+	};
+
+	std::function<void(int, int)> hide_target_range_index = [&](int min, int max) {
+
+		for (std::size_t i = 0; i < frames_.size(); ++i) {
+			auto layer = this->getByName(frames_[i]->layer_name);
+			if (i >= min && i <= max) {
+				if (layer) {
+					layer->setAlpha(0.f);
+				}
 			}
 		}
 	};
@@ -87,7 +100,7 @@ protected:
 	float alpha_;
 
 	//camera
-	ofEasyCam cam_;
+	ofx::Gen::Camera cam_;
 	glm::mat4 view_;
 	float cam_speed_, cam_distance_;
 	float time_;

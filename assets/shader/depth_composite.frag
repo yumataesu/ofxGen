@@ -50,7 +50,7 @@ layout(location = 1) out vec4 fragColor_position;
 void main() {
 
     if(u_layer_num == 0) {
-        fragColor_color = vec4(0);
+        fragColor_color = vec4(0, 0, 0, 1);
         fragColor_position = vec4(0);
     }
 
@@ -61,7 +61,7 @@ void main() {
 
         gl_FragDepth = tex1_depth;
         fragColor_color = vec4(tex1_color.rgb * u_alpha0, u_alpha0);
-        fragColor_position = vec4(tex1_world.xyz, u_alpha0);
+        fragColor_position = vec4(tex1_world.xyz, 1.0);
 
     }
     else if(u_layer_num == 2) {
@@ -81,7 +81,7 @@ void main() {
 
             if(u_alpha0 < 0.001) { 
                 fragColor_color = vec4(c1.rgb * u_alpha1, u_alpha1);
-                fragColor_position = vec4(p1.rgb, u_alpha1); 
+                fragColor_position = vec4(p1.rgb, 1.0); 
             }
         }
         else  {
