@@ -61,7 +61,7 @@ Manager::Manager(const std::size_t layer_num, ofFbo::Settings& settings)
 	ssao = std::make_unique<ofx::Ssao>(settings.width, settings.height);
 
 	ofAddListener(gen_event_, this, &Manager::layerAdded);
-	ofAddListener(ofEvents().update, this, &Manager::update, OF_EVENT_ORDER_APP);
+	//ofAddListener(ofEvents().update, this, &Manager::update, OF_EVENT_ORDER_APP);
 }
 
 
@@ -69,18 +69,18 @@ Manager::Manager(const std::size_t layer_num, ofFbo::Settings& settings)
 
 Manager::~Manager() {
 	ofRemoveListener(gen_event_, this, &Manager::layerAdded);
-	ofRemoveListener(ofEvents().update, this, &Manager::update, OF_EVENT_ORDER_APP);	
+	//ofRemoveListener(ofEvents().update, this, &Manager::update, OF_EVENT_ORDER_APP);	
 }
 
 
 
 
-void Manager::update(ofEventArgs& arg) {
-	delta_time_ = ofGetLastFrameTime();
+void Manager::update() {
+	delta_time_ = ofGetLastFrameTime() * 2.;
 	for (const auto& layer : this->process_map) {
-		//if (layer.second->getAlpha() > 0.f) {
+		if (layer.second->getAlpha() > 0.f) {
 			layer.second->update(delta_time_);
-		//}
+		}
 	}
 
 	time_ += delta_time_ * cam_speed_;

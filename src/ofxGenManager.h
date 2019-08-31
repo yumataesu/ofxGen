@@ -25,6 +25,8 @@ public:
 	Manager(const Manager& mng) = delete;
 	Manager& operator=(const Manager& mng) = delete;
 
+	void update();
+
 	void drawFrameGui(const std::string& parent_name);
 	void drawUtilGui();
 
@@ -80,7 +82,6 @@ public:
 	};
 
 protected:
-	void update(ofEventArgs& arg);
 	void renderToFbo();
 	void composite();
 	void lightingPass();
