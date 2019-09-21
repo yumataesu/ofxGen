@@ -12,47 +12,50 @@ namespace Gen {
 class BaseLayer : public ofx::Base::Behavior
 {
 public:
-	BaseLayer()
-		: is_3d_(false)
-		, alpha_(0.f)
-		, target_frame_index_(-1)
+	BaseLayer();
+	virtual ~BaseLayer() 
 	{
+		ofRemoveListener(ofEvents().keyPressed, this, &BaseLayer::keyPressed);
 	}
-
-	BaseLayer(int width, int height)
-		: is_3d_(false)
-		, alpha_(0.f)
-		, target_frame_index_(-1)
-		, width(width)
-		, height(height)
-	{}
-
-	virtual ~BaseLayer() {};
-	virtual void update(const double& delta_time) = 0;
-	virtual void draw() {};
+	virtual void setup() = 0;
+	virtual void update(const double delta_time) = 0;
+	virtual void draw() = 0;
+	virtual void keyPressed(ofKeyEventArgs& args) {};
 	virtual void bang() {}
+	virtual void drawGui();
+	virtual void drawGuiExt() {}
 
-	virtual void drawGui() {
-		ofxImGui::AddGroup(parameter_group_);
-	}
+	void   setAlpha(const float& alpha) { alpha_ = alpha; };
+	float& getAlpha() { return alpha_; } //for use imgui
+	float  getAlpha() const { return alpha_; }
+	void   setTarget(const int target_frame_index) { slot_index_ = target_frame_index; }
+	int    getTarget() { return slot_index_; }
 
-	void setAlpha(const float& alpha) { alpha_ = alpha; };
-	float& getAlpha() { return alpha_; }
-	float getAlpha() const { return alpha_; }
+	void   set3D() { is_3d_ = true; }
+	void   set2D() { is_3d_ = false; }
+	bool   is3D() { return is_3d_; }
 
-	void setTarget(const int target_frame_index) { target_frame_index_ = target_frame_index; }
-	int getTarget() { return target_frame_index_; }
+	ofxAutoReloadedShader& getRenderShader() { return render_shader_; }
 
-	void set3D() { is_3d_ = true; }
-	void set2D() { is_3d_ = false; }
-	bool is3D() { return is_3d_; }
-	ofxAutoReloadedShader render_shader;
-	float width, height;
+	void beforeSetup(int width, int height);
+	void beforeUpdate();
+	void beforeDraw();
 
+	ofParameter<float> speed;
+	ofParameter<ofFloatColor> main_col;
 protected:
+	float width_, height_;
 	float alpha_;
 	bool is_3d_;
-	int target_frame_index_;
+	int slot_index_;
+	std::string current_preset_name_;
+	ofxAutoReloadedShader render_shader_;
+
+private:
+	void load(const std::string& filepath);
+	bool save(const std::string& filepath);
+	int current_preset_index_;
+	std::vector<std::string> preset_names_;
 };
 }
 }
