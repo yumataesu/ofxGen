@@ -189,7 +189,9 @@ void Manager::setupBackyard() {
 	ofDisableArbTex();
 	for (auto& name : registered_names()) {
 		auto t = std::make_unique<ofTexture>();
-		ofLoadImage(*t, "generative/" + name + ".png");
+		if (!ofLoadImage(*t, "ofxGen/" + name + "/thumbnail.jpg"))
+			if (!ofLoadImage(*t, "../../../../addons/ofxGen/assets/no-thumbnail.png"))
+				ofLoadImage(*t, "../../addons/ofxGen/assets/no-thumbnail.png");
 		backyard_data_map_[name] = std::move(t);
 	}
 	ofEnableArbTex();
@@ -285,6 +287,16 @@ void Manager::drawSlotGui() {
 		ImGui::Text(std::string(frm->layer_name + " : Param").data());
 		if (layer != nullptr) {
 			layer->drawGui();
+		}
+
+		if (layer != nullptr) {
+			ImGui::SameLine();
+			if (ImGui::Button("Capture")) {
+				ofPixels pixels;
+				frm->fbo.readToPixels(pixels);
+				pixels.resize(width_ * 0.1, height_ * 0.1);
+				ofSaveImage(pixels, "ofxGen/" + frm->layer_name + "/thumbnail.jpg");
+			}
 		}
 		ImGui::End();
 
