@@ -28,9 +28,9 @@ Manager::Manager(const std::size_t layer_num, const ofFbo::Settings& settings, c
 	quad_.addVertex(ofVec3f(-1.0, 1.0, 0.0)); //top-left
 	quad_.addTexCoord(ofVec2f(0.0f, 1.0f));
 
-	if (layer_num_ > 6) {
-		ofLogError("Max layer num is 6.");
-		layer_num_ = 6;
+	if (layer_num_ > 8) {
+		ofLogError("Max layer num is 8.");
+		layer_num_ = 8;
 	}
 	slots_.reserve(layer_num_);
 	for (std::size_t i = 0; i < layer_num_; ++i) {
