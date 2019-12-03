@@ -14,10 +14,11 @@ Manager::Manager(const std::size_t layer_num, const ofFbo::Settings& settings, c
 	, height_(settings.height)
 	, cam_elapsed_time_(0.f)
 {
-	if (!deferred_composite_shader_.load("../../../../addons/ofxGen/assets/composite/depth_composite")) {
-		deferred_composite_shader_.unload();
-		deferred_composite_shader_.load("../../addons/ofxGen/assets/composite/depth_composite");
+    std::string path = "../../addons/ofxGen/assets/composite/depth_composite";    
+	if (!deferred_composite_shader_.load(path)) {
+		deferred_composite_shader_.load("../../" + path);
 	}
+    
 	quad_.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
 	quad_.addVertex(ofVec3f(1.0, 1.0, 0.0)); // top-right
 	quad_.addTexCoord(ofVec2f(1.0f, 1.0f));
@@ -76,7 +77,7 @@ void Manager::layerAdded(GenEventArgs& args) {
 	if (it != this->process_map.end())
 		return;
 
-	auto& layer = add(args.target_layer_name);
+	const auto& layer = add(args.target_layer_name);
 	layer->setTarget(args.target_slot_index);
 	layer->setName(args.target_layer_name);
 	layer->beforeSetup(width_, height_);

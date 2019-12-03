@@ -35,8 +35,8 @@ public:
 	ofTexture& get3DTexture(int bindpoint = 0) { return fbo_3d_.getTexture(bindpoint); }
 	ofTexture& get2DTexture() { return fbo_2d_.getTexture(); }
 
-	glm::vec3& getCameraPosition() { return cam_.getPosition(); }
-	glm::mat4& getProjectionMatrix() { return cam_.getProjectionMatrix(); }
+	const glm::vec3& getCameraPosition() { return cam_.getPosition(); }
+	const glm::mat4& getProjectionMatrix() { return cam_.getProjectionMatrix(); }
 	glm::mat4& getViewMatrix() { return view_; }	
 
 	std::map<std::string, std::shared_ptr<BaseLayer>>& getProcessMap() { return process_map; };
