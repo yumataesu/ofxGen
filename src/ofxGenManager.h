@@ -17,7 +17,7 @@ class Manager : public ofx::Base::BaseManager<BaseLayer>
 
 public:
 	Manager() {}
-	Manager(const std::size_t layer_num, const ofFbo::Settings& settings, const std::string& unique_name);
+	Manager(const std::size_t layer_num, const ofFbo::Settings& settings, const std::string& unique_name, bool enable_3d);
 	~Manager();
 	Manager(const Manager& mng) = delete;
 	Manager& operator=(const Manager& mng) = delete;
@@ -53,8 +53,22 @@ public:
 		}
 	};
 
+	std::function<void(int, int)> hide_target_range_index = [&](int min, int max) {
+
+		for (std::size_t i = 0; i < slots_.size(); ++i) {
+			auto layer = this->getByName(slots_[i]->layer_name);
+			if (i >= min && i <= max) {
+				if (layer) {
+					layer->setAlpha(0.f);
+				}
+			}
+		}
+	};
+
 protected:
 	void renderToFbo();
+	void comp2D();
+	void comp3D();
 	void layerAdded(GenEventArgs& event );
 	void ImGuiImageBottunFited(const ofTexture& src);
 	static std::map<std::string, std::shared_ptr<ofTexture>> backyard_data_map_;
@@ -62,6 +76,8 @@ protected:
 	static float cam_distance_;
 	int width_, height_;
 	std::string unique_name_;
+
+	bool enable_3d_;
 
 	ofEvent<GenEventArgs> gen_event_args_;
 

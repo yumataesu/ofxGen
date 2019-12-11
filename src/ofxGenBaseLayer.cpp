@@ -8,6 +8,7 @@ BaseLayer::BaseLayer()
 	, slot_index_(-1)
 	, width_(0)
 	, height_(0)
+	, elapsed_time(0.f)
 	, current_preset_name_("Default")
 {
 	ofAddListener(ofEvents().keyPressed, this, &BaseLayer::keyPressed);
@@ -20,6 +21,7 @@ void BaseLayer::drawGui() {
 	}
 	ImGui::Separator();
 	ofxImGui::AddGroup(parameter_group_);
+	drawGuiExt();
 	if (ImGui::Button("Update")) {
 		save("ofxGen/" + parameter_group_.getName() + "/" + preset_names_[current_preset_index_] + ".json");
 	}
@@ -70,7 +72,12 @@ bool BaseLayer::save(const std::string& filepath) {
 	return ofSaveJson(filepath, json);
 }
 
-void BaseLayer::beforeUpdate() {}
+void BaseLayer::beforeUpdate(const double delta_time) {
+	auto result = std::find(bang_intervals.begin(), bang_intervals.end(), frame_num);
+	frame_num += 1;
+	//if (result != bang_intervals.end()) { bang(); }
+	if (frame_num > bang_intervals.back()) frame_num = 0;
+}
 void BaseLayer::beforeDraw() {}
 }
 }

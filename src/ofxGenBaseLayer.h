@@ -38,7 +38,7 @@ public:
 	ofxAutoReloadedShader& getRenderShader() { return render_shader_; }
 
 	void beforeSetup(int width, int height);
-	void beforeUpdate();
+	void beforeUpdate(const double delta_time);
 	void beforeDraw();
 
 	ofParameter<float> speed;
@@ -50,6 +50,12 @@ protected:
 	int slot_index_;
 	std::string current_preset_name_;
 	ofxAutoReloadedShader render_shader_;
+	float elapsed_time;
+
+	const std::vector<std::string> bang_type = { "Manual", "Fractrial", "Sequecial" };
+	int frame_num;
+	std::vector<int> bang_intervals{ 2, 8, 16, 32, 64, 96, 128 };
+	int random_bang;
 
 private:
 	void load(const std::string& filepath);

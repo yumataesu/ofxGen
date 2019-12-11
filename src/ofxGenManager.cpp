@@ -6,13 +6,14 @@ std::map <std::string, std::shared_ptr<ofTexture>> Manager::backyard_data_map_;
 float Manager::cam_speed_ = 0.1f;
 float Manager::cam_distance_ = 100.f;
 
-Manager::Manager(const std::size_t layer_num, const ofFbo::Settings& settings, const std::string& unique_name)
+Manager::Manager(const std::size_t layer_num, const ofFbo::Settings& settings, const std::string& unique_name, bool enable_3d)
 	: layer_num_(layer_num)
 	, alpha_(1.f)
 	, unique_name_(unique_name)
 	, width_(settings.width)
 	, height_(settings.height)
 	, cam_elapsed_time_(0.f)
+	, enable_3d_(enable_3d)
 {
 	if (!deferred_composite_shader_.load("../../../../addons/ofxGen/assets/composite/depth_composite")) {
 		deferred_composite_shader_.unload();
@@ -44,9 +45,11 @@ Manager::Manager(const std::size_t layer_num, const ofFbo::Settings& settings, c
 
 	ofDisableArbTex();
 	fbo_2d_.allocate(settings);
-	fbo_3d_.allocate(settings);
-	fbo_3d_.createAndAttachTexture(GL_RGBA32F, 1);
-	fbo_3d_.createAndAttachTexture(GL_RGBA32F, 2);
+	if (enable_3d_) {
+		fbo_3d_.allocate(settings);
+		fbo_3d_.createAndAttachTexture(GL_RGBA32F, 1);
+		fbo_3d_.createAndAttachTexture(GL_RGBA32F, 2);
+	}
 
 	ofAddListener(gen_event_args_, this, &Manager::layerAdded);
 }
@@ -60,6 +63,7 @@ Manager::~Manager() {
 void Manager::update(const double delta_time) {
 	for (const auto& layer : this->process_map) {
 		if (layer.second->getAlpha() > 0.f) {
+			layer.second->beforeUpdate(delta_time);
 			layer.second->update(delta_time);
 		}
 	}
@@ -74,6 +78,8 @@ void Manager::update(const double delta_time) {
 void Manager::layerAdded(GenEventArgs& args) {
 	auto it = this->process_map.find(args.target_layer_name);
 	if (it != this->process_map.end())
+		return;
+	if (!enable_3d_ && it->second->is3D() == true) 
 		return;
 
 	auto& layer = add(args.target_layer_name);
@@ -120,7 +126,11 @@ void Manager::renderToFbo() {
 		}
 	}
 
+	comp2D();
+	if (enable_3d_) comp3D();
+}
 
+void Manager::comp2D() {
 	//composite 2D-------------------------------------------------------
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -142,8 +152,9 @@ void Manager::renderToFbo() {
 	}
 	fbo_2d_.end();
 	glDisable(GL_BLEND);
+}
 
-
+void Manager::comp3D() {
 	//composite 3d depth test in shader-------------------------------------------------------
 	ofDisableAlphaBlending();
 	fbo_3d_.begin();
@@ -151,8 +162,8 @@ void Manager::renderToFbo() {
 	ofClear(0);
 	deferred_composite_shader_.begin();
 	int i = 0;
-	int col_bindp = 0; 
-	int depth_pindp = 1; 
+	int col_bindp = 0;
+	int depth_pindp = 1;
 	int position_bindp = 2;
 
 	for (const auto& frm : slots_) {
@@ -205,21 +216,21 @@ void Manager::drawSlotGui() {
 	window_flags |= ImGuiWindowFlags_NoCollapse;
 
 	auto& style = ImGui::GetStyle();
-	style.FramePadding = ImVec2(8.f, 2.f);
+	//style.FramePadding = ImVec2(8.f, 2.f);
 	ImVec2 push_window_padding = style.WindowPadding;
 
-	ImVec4* colors = ImGui::GetStyle().Colors;
-	auto button_col = colors[ImGuiCol_Button];
-	auto button_col_hovered = colors[ImGuiCol_ButtonHovered];
-	auto button_col_active = colors[ImGuiCol_ButtonActive];
+	//ImVec4* colors = ImGui::GetStyle().Colors;
+	//auto button_col = colors[ImGuiCol_Button];
+	//auto button_col_hovered = colors[ImGuiCol_ButtonHovered];
+	//auto button_col_active = colors[ImGuiCol_ButtonActive];
 
 	int index = 0;
 	for (const auto& frm : slots_) {
 		style.WindowPadding = push_window_padding;
 		std::string window_title = "0" + std::to_string(index) + " | " + unique_name_;
-		style.FramePadding = ImVec2(2.f, 3.f);
+		//style.FramePadding = ImVec2(2.f, 3.f);
 		ImGui::Begin(window_title.data(), 0, window_flags);
-		style.FramePadding = ImVec2(2.f, 2.f);
+		//style.FramePadding = ImVec2(2.f, 2.f);
 
 		auto layer = this->getByName(frm->layer_name);
 
@@ -267,9 +278,9 @@ void Manager::drawSlotGui() {
 
 		// Layer remove UI --------------------------------------------------
 		//
-		colors[ImGuiCol_Button] = ImVec4(0.00f, 0.27f, 0.62f, 1.00f);
-		colors[ImGuiCol_ButtonHovered] = ImVec4(0.00f, 0.46f, 0.62f, 1.00f);
-		colors[ImGuiCol_ButtonActive] = ImVec4(0.00f, 0.83f, 1.00f, 1.00f);
+		//colors[ImGuiCol_Button] = ImVec4(0.00f, 0.27f, 0.62f, 1.00f);
+		//colors[ImGuiCol_ButtonHovered] = ImVec4(0.00f, 0.46f, 0.62f, 1.00f);
+		//colors[ImGuiCol_ButtonActive] = ImVec4(0.00f, 0.83f, 1.00f, 1.00f);
 		ImGui::SameLine();
 		if (ImGui::Button("", ImVec2(slider_size.x, slider_size.x))) {
 			this->remove(frm->layer_name);
@@ -301,9 +312,9 @@ void Manager::drawSlotGui() {
 		ImGui::End();
 
 		index++;
-		colors[ImGuiCol_Button] = button_col;
-		colors[ImGuiCol_ButtonHovered] = button_col_hovered;
-		colors[ImGuiCol_ButtonActive] = button_col_active;
+		//colors[ImGuiCol_Button] = button_col;
+		//colors[ImGuiCol_ButtonHovered] = button_col_hovered;
+		//colors[ImGuiCol_ButtonActive] = button_col_active;
 	}
 
 	style.WindowPadding = push_window_padding;
@@ -351,12 +362,8 @@ void Manager::drawBackyardGui() {
 	auto button_col_hovered = colors[ImGuiCol_ButtonHovered];
 	auto button_col_active = colors[ImGuiCol_ButtonActive];
 
-	colors[ImGuiCol_Button] = ImVec4(0.00f, 0.27f, 0.62f, 1.00f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.00f, 0.46f, 0.62f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.00f, 0.83f, 1.00f, 1.00f);
-
 	ImGui::Begin("BACKYARD");
-	style.FramePadding = ImVec2(2.f, 2.f);
+	//style.FramePadding = ImVec2(2.f, 2.f);
 
 	int view_index = 1;
 	for (auto& data : backyard_data_map_) {
@@ -371,10 +378,6 @@ void Manager::drawBackyardGui() {
 		view_index++;
 	}
 	ImGui::End();
-
-	colors[ImGuiCol_Button] = button_col;
-	colors[ImGuiCol_ButtonHovered] = button_col_hovered;
-	colors[ImGuiCol_ButtonActive] = button_col_active;
 }
 }
 }

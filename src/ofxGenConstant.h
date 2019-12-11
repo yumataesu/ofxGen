@@ -29,6 +29,12 @@ struct GenEventArgs {
 	int target_slot_index;
 	std::shared_ptr<ofTexture> thumbnail;
 };
+
+enum BangType {
+	Manual,
+	Fractorial,
+	Sequencial
+};
 }
 }
 #endif /* Constant_h */
